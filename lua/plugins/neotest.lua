@@ -2,9 +2,11 @@ return {
   {
     "nvim-neotest/neotest",
     dependencies = {
-      "akinsho/flutter-tools.nvim",
-      "sidlatau/neotest-dart",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
+      "sidlatau/neotest-dart",
+      "akinsho/flutter-tools.nvim",
     },
     opts = function(_, opts)
       table.insert(
