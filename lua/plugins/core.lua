@@ -61,7 +61,7 @@ return {
     config = function(_, opts)
       require("nvim-treesitter.configs").setup({
         ensure_installed = {
-          -- "dart",
+          "dart",
           "go",
           "rust",
           "css",
@@ -73,7 +73,7 @@ return {
         indent = {
           enable = true,
           disable = {
-            "dart"
+            "dart",
           },
         },
       })
