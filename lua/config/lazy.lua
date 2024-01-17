@@ -34,7 +34,7 @@ require("lazy").setup({
     { import = "plugins.lang.dart" },
     { import = "plugins.neotest" },
     { import = "plugins.dap" },
-    { import = "plugins.lsp_config" },
+    -- { import = "plugins.lsp_config" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
