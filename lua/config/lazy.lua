@@ -29,6 +29,7 @@ require("lazy").setup({
     { import = "plugins.extras.ruscmd" },
     { import = "plugins.extras.ccc" },
     { import = "plugins.extras.glow" },
+    { import = "plugins.extras.format_on_save" },
     { import = "plugins.dashboard" },
     { import = "plugins.lang.dart" },
     { import = "plugins.neotest" },
