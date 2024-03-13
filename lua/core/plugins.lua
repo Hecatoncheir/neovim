@@ -65,5 +65,6 @@ require("lazy").setup({
         -- { import = "plugins.extensions.neodim" },
         -- { import = "plugins.extensions.ibl" },
         -- { import = "plugins.extensions.peek" },
+        -- { import = "plugins.ui.brackets_highlihgter" },
     },
 })

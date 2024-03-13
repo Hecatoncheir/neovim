@@ -53,7 +53,7 @@ return {
                     special_files = { "Cargo.toml", "Makefile", "README.md", "readme.md" },
                     symlink_destination = true,
                     highlight_git = false,
-                    highlight_diagnostics = false,
+                    highlight_diagnostics = true,
                     highlight_opened_files = "none",
                     highlight_modified = "none",
                     highlight_bookmarks = "none",
@@ -146,8 +146,8 @@ return {
                     timeout           = 400,
                 },
                 diagnostics = {
-                    enable = false,
-                    show_on_dirs = false,
+                    enable = true,
+                    show_on_dirs = true,
                     show_on_open_dirs = true,
                     debounce_delay = 50,
                     severity = {

@@ -1,5 +1,5 @@
 vim.wo.number = true
-vim.wo.relativenumber = true
+-- vim.wo.relativenumber = false
 
 vim.opt.spelllang = 'en_us,ru_ru'
 vim.opt.spell = true
