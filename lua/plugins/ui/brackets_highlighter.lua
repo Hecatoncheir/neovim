@@ -29,7 +29,7 @@ M.onCursorMove = function(buf)
     local target_node = ts_utils.get_node_at_cursor()
     if target_node == nil then return end
 
-    local node = M.findNodeForBracketsHightlight(target_node)
+    local node = M.findNodeForBracketsHighlight(target_node)
     if node == nil then
         M.hideBrackets()
         return
@@ -65,59 +65,46 @@ M.showCloseBracketOnLine = function(buf, lineNumber)
     vim.fn.sign_place(0, "bracket_close", "bracket_close", buf, { lnum = lineNumber })
 end
 
-M.findNodeForBracketsHightlight = function(node)
-    if (node:type() == 'block') then
-        return node
+M.isContains = function(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
     end
+    return false
+end
 
-    if (node:type() == 'class_definition') then
-        return node
-    end
-
-    if (node:type() == 'class_body') then
-        return node
-    end
-
-    if (node:type() == 'function_definition') then
-        return node
-    end
-
-    if (node:type() == 'formal_parameter_list') then
-        return node
-    end
-
-    if (node:type() == 'function_body') then
-        return node
-    end
-
-    if (node:type() == 'arguments') then
-        return node
-    end
-
-    if (node:type() == 'identifier') then
-        return node
-    end
-
-    if (node:type() == 'type_identifier') then
-        return node
-    end
-
-    if (node:type() == 'optional_formal_parameters') then
-        return node
-    end
-
-    if (node:type() == 'if_statement') then
-        return node
-    end
-
-    if (node:type() == 'program') then
+M.findNodeForBracketsHighlight = function(node)
+    local nodeTypesForHighlight = {
+        'block',
+        'parenthesized_expression',
+        'class_definition',
+        'class_body',
+        'function_definition',
+        'formal_parameter_list',
+        'function_body',
+        'arguments',
+        'optional_formal_parameters',
+        -- 'identifier',
+        -- 'type_identifier',
+        'initialized_variable_definition',
+        'local_variable_declaration',
+        'if_statement',
+        'switch_expression',
+        -- 'switch_expression_case',
+        'table_constructor',
+        'string',
+        'string_content',
+        'program',
+    }
+    if (M.isContains(nodeTypesForHighlight, node:type())) then
         return node
     end
 
     local parentNode = node:parent()
     if parentNode == nil then return end
 
-    return M.findNodeForBracketsHightlight(node:parent())
+    return M.findNodeForBracketsHighlight(parentNode)
 end
 
 M.findBeginAndEndNodeLines = function(node)
