@@ -16,8 +16,9 @@ M.setup = function(opt)
         callback = function(data)
             local buf = data.buf
 
-            vim.fn.sign_define("bracket_open", { text = "{" })
-            vim.fn.sign_define("bracket_close", { text = "}" })
+            vim.fn.sign_define("brackets_open_and_close", { text = "󱋷" })
+            vim.fn.sign_define("bracket_open", { text = "" })
+            vim.fn.sign_define("bracket_close", { text = "" })
 
             M.onCursorMove(buf)
         end
@@ -27,6 +28,7 @@ end
 M.onCursorMove = function(buf)
     local target_node = ts_utils.get_node_at_cursor()
     if target_node == nil then return end
+    print(target_node:type())
 
     local node = M.findNodeForBracketsHightlight(target_node)
     if node == nil then
@@ -37,6 +39,7 @@ M.onCursorMove = function(buf)
     local begin_node_line, end_node_line = M.findBeginAndEndNodeLines(node)
     if begin_node_line == end_node_line then
         M.hideBrackets()
+        M.showOpenAndCloseBracketsOnLine(buf, begin_node_line)
         return
     end
 
@@ -46,8 +49,13 @@ M.onCursorMove = function(buf)
 end
 
 M.hideBrackets = function()
+    vim.fn.sign_unplace("brackets_open_and_close")
     vim.fn.sign_unplace("bracket_open")
     vim.fn.sign_unplace("bracket_close")
+end
+
+M.showOpenAndCloseBracketsOnLine = function(buf, lineNumber)
+    vim.fn.sign_place(0, "brackets_open_and_close", "brackets_open_and_close", buf, { lnum = lineNumber })
 end
 
 M.showOpenBracketOnLine = function(buf, lineNumber)
@@ -63,13 +71,52 @@ M.findNodeForBracketsHightlight = function(node)
         return node
     end
 
+    if (node:type() == 'class_definition') then
+        return node
+    end
+
+    if (node:type() == 'class_body') then
+        return node
+    end
+
     if (node:type() == 'function_definition') then
+        return node
+    end
+
+    if (node:type() == 'formal_parameter_list') then
+        return node
+    end
+
+    if (node:type() == 'function_body') then
+        return node
+    end
+
+    if (node:type() == 'arguments') then
+        return node
+    end
+
+    if (node:type() == 'identifier') then
+        return node
+    end
+
+    if (node:type() == 'type_identifier') then
+        return node
+    end
+
+    if (node:type() == 'optional_formal_parameters') then
         return node
     end
 
     if (node:type() == 'if_statement') then
         return node
     end
+
+    if (node:type() == 'program') then
+        return node
+    end
+
+    local parentNode = node:parent()
+    if parentNode == nil then return end
 
     return M.findNodeForBracketsHightlight(node:parent())
 end
