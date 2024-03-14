@@ -28,7 +28,6 @@ end
 M.onCursorMove = function(buf)
     local target_node = ts_utils.get_node_at_cursor()
     if target_node == nil then return end
-    print(target_node:type())
 
     local node = M.findNodeForBracketsHightlight(target_node)
     if node == nil then
