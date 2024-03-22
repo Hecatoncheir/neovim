@@ -58,7 +58,8 @@ vim.keymap.set('n', '<tab>', '<Cmd>BufferNext<CR>', {})
 vim.keymap.set('n', '<S-tab>', '<Cmd>BufferPrevious<CR>', {})
 vim.keymap.set('n', '<C-x>', '<Cmd>BufferClose<CR>', {})
 -- vim.keymap.set('n', '<C-S-x>', '<Cmd>BufferRestore<CR>', {})
-vim.keymap.set('n', '<S-x>', '<Cmd>BufferRestore<CR>', {})
+-- vim.keymap.set('n', '<S-x>', '<Cmd>BufferRestore<CR>', {})
+vim.keymap.set('n', '<S-x>', commands.Reopen, {})
 
 
 -- Tests

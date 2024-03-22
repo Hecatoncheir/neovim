@@ -38,6 +38,11 @@ local CloseTabsToTheRight = function()
 end
 vim.api.nvim_create_user_command('CloseTabsToTheRight', CloseTabsToTheRight, { desc = "Close tabs to the right" })
 
+local Reopen = function()
+    vim.cmd('BufferRestore')
+end
+vim.api.nvim_create_user_command('Reopen', Reopen, { desc = "Reopen closed tab" })
+
 -- Comments
 local commentApi = require('Comment.api')
 local CommentLine = function()
@@ -236,6 +241,7 @@ commands.ShowFileInExplorer  = ShowFileInExplorer
 commands.CloseOtherTabs      = CloseOtherTabs
 commands.CloseTabsToTheLeft  = CloseTabsToTheLeft
 commands.CloseTabsToTheRight = CloseTabsToTheRight
+commands.Reopen              = Reopen
 commands.CommentLine         = CommentLine
 commands.CommentLines        = CommentLines
 commands.ExtensionsManager   = ExtensionsManager

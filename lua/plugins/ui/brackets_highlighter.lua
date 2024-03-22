@@ -6,67 +6,213 @@ local parsers = require('nvim-treesitter.parsers')
 
 local M = {}
 
+local defaultOptions = {
+    ['extensions'] = {
+        ['*.lua'] = {
+            ['bracketOpenIcon'] = '',
+            ['bracketCloseIcon'] = '',
+            ['bracketsOpenAndCloseIcon'] = '󱋷',
+            ['nodesForBracketsHighlight'] = {
+                'block',
+                'parenthesized_expression',
+                'class_definition',
+                'class_body',
+                'function_definition',
+                'arguments',
+                'formal_parameter_list',
+                'function_body',
+                'arguments',
+                'optional_formal_parameters',
+                'identifier',
+                'type_identifier',
+                'initialized_variable_definition',
+                'local_variable_declaration',
+                'if_statement',
+                'switch_expression',
+                'switch_expression_case',
+                'table_constructor',
+                'string',
+                'string_content',
+                'list_literal',
+                'program',
+            },
+        },
+        ['*.dart'] = {
+            ['bracketOpenIcon'] = '',
+            ['bracketCloseIcon'] = '',
+            ['bracketsOpenAndCloseIcon'] = '󱋷',
+            ['nodesForBracketsHighlight'] = {
+                -- 'identifier',
+                'block',
+                'parenthesized_expression',
+                'class_definition',
+                'class_body',
+                'function_definition',
+                'arguments',
+                'formal_parameter_list',
+                'function_body',
+                'arguments',
+                'optional_formal_parameters',
+                'initialized_variable_definition',
+                'local_variable_declaration',
+                'if_statement',
+                'switch_expression',
+                'table_constructor',
+                'string',
+                'string_content',
+                'list_literal',
+                'program',
+            },
+        },
+    },
+}
+
 
 M.setup = function(opt)
-    local group = api.nvim_create_augroup('brackets_highlighter_buf', { clear = true })
-    local filetype = vim.bo.filetype
-    api.nvim_create_autocmd({ 'CursorMoved' }, {
-        group = group,
-        pattern = '*.lua,*.dart',
-        callback = function(data)
-            local buf = data.buf
+    local options;
+    if opt == nil then
+        options = defaultOptions
+    end
 
-            vim.fn.sign_define("brackets_open_and_close", { text = "󱋷" })
-            vim.fn.sign_define("bracket_open", { text = "" })
-            vim.fn.sign_define("bracket_close", { text = "" })
+    local group = api.nvim_create_augroup('BracketsHighlighterBuffer', { clear = true })
 
-            M.onCursorMove(buf)
-        end
-    })
+    local extensions = options['extensions']
+    for extension, settings in pairs(extensions) do
+        api.nvim_create_autocmd({ 'CursorMoved' }, {
+            group = group,
+            pattern = extension,
+            callback = function(data)
+                local extension = extension:gsub("[*.]", "")
+
+                local bracketOpenIcon = settings['bracketOpenIcon']
+                if bracketOpenIcon ~= 'auto' then
+                    M.createBracketOpenIconForExtension(extension, bracketOpenIcon)
+                else
+                    M.createBracketOpenIconForExtension(extension, '')
+                end
+
+                local bracketCloseIcon = settings['bracketCloseIcon']
+                if bracketCloseIcon ~= 'auto' then
+                    M.createBracketCloseIconForExtension(extension, bracketCloseIcon)
+                else
+                    M.createBracketCloseIconForExtension(extension, '')
+                end
+
+                local bracketsOpenAndCloseIcon = settings['bracketsOpenAndCloseIcon']
+                if bracketsOpenAndCloseIcon ~= 'auto' then
+                    M.createBracketsOpenAndCloseIconForExtension(extension, bracketsOpenAndCloseIcon)
+                else
+                    M.createBracketsOpenAndCloseIconForExtension(extension, '')
+                end
+
+                local buf = data.buf
+                M.onCursorMove(buf, extension, settings)
+            end
+        })
+    end
 end
 
-M.onCursorMove = function(buf)
-    local target_node = ts_utils.get_node_at_cursor()
-    if target_node == nil then return end
+M.createBracketOpenIconForExtension = function(extension, icon)
+    local signName = extension .. "_bracketOpen"
 
-    local node = M.findNodeForBracketsHighlight(target_node)
+    -- local definedSign = vim.fn.sign_getdefined(signName)
+    -- if definedSign ~= nil then
+    --     vim.fn.sign_undefine({ signName })
+    -- end
+
+    vim.fn.sign_define(signName, { text = icon })
+end
+
+M.createBracketCloseIconForExtension = function(extension, icon)
+    local signName = extension .. "_bracketClose"
+    vim.fn.sign_define(signName, { text = icon })
+end
+
+M.createBracketsOpenAndCloseIconForExtension = function(extension, icon)
+    local signName = extension .. "_bracketsOpenAndClose"
+    vim.fn.sign_define(signName, { text = icon })
+end
+
+M.onCursorMove = function(buf, extension, settings)
+    local targetNode = ts_utils.get_node_at_cursor()
+    if targetNode == nil then return end
+
+    local nodesForBracketsHighlihgt = settings['nodesForBracketsHighlight']
+    local node = M.findNodeForBracketsHighlight(targetNode, nodesForBracketsHighlihgt)
     if node == nil then
-        M.hideBrackets()
+        local bracketOpenIcon = settings['bracketOpenIcon']
+        if bracketOpenIcon == 'auto' then
+            local bracketOpenIcon = '{'
+            M.createBracketOpenIconForExtension(extension, bracketOpenIcon)
+        end
+
+        local bracketCloseIcon = settings['bracketCloseIcon']
+        if bracketCloseIcon == 'auto' then
+            local bracketCloseIcon = '}'
+            M.createBracketCloseIconForExtension(extension, bracketCloseIcon)
+        end
+
+        local bracketsOpenAndCloseIcon = settings['bracketsOpenAndCloseIcon']
+        if bracketsOpenAndCloseIcon == 'auto' then
+            local bracketsOpenAndCloseIcon = '{}'
+            M.createBracketsOpenAndCloseIconForExtension(extension, bracketsOpenAndCloseIcon)
+        end
+
+        M.hideBrackets(extension)
         return
     end;
 
-    local begin_node_line, end_node_line = M.findBeginAndEndNodeLines(node)
-    if begin_node_line == end_node_line then
-        M.hideBrackets()
-        M.showOpenAndCloseBracketsOnLine(buf, begin_node_line)
+    local beginNodeLine, endNodeLine = M.findBeginAndEndNodeLines(node)
+    if beginNodeLine == endNodeLine then
+        M.hideBrackets(extension)
+        M.showOpenAndCloseBracketsOnLine(extension, buf, beginNodeLine)
         return
     end
 
-    M.hideBrackets()
-    M.showOpenBracketOnLine(buf, begin_node_line)
-    M.showCloseBracketOnLine(buf, end_node_line)
+    M.hideBrackets(extension)
+    M.showOpenBracketOnLine(extension, buf, beginNodeLine)
+    M.showCloseBracketOnLine(extension, buf, endNodeLine)
 end
 
-M.hideBrackets = function()
-    vim.fn.sign_unplace("brackets_open_and_close")
-    vim.fn.sign_unplace("bracket_open")
-    vim.fn.sign_unplace("bracket_close")
+M.hideBrackets = function(extension)
+    vim.fn.sign_unplace(extension .. "_bracketOpen")
+    vim.fn.sign_unplace(extension .. "_bracketClose")
+    vim.fn.sign_unplace(extension .. "_bracketsOpenAndClose")
 end
 
-M.showOpenAndCloseBracketsOnLine = function(buf, lineNumber)
-    vim.fn.sign_place(0, "brackets_open_and_close", "brackets_open_and_close", buf, { lnum = lineNumber })
+M.showOpenBracketOnLine = function(extension, buf, lineNumber)
+    vim.fn.sign_place(
+        0,
+        extension .. "_bracketOpen",
+        extension .. "_bracketOpen",
+        buf,
+        { lnum = lineNumber }
+    )
 end
 
-M.showOpenBracketOnLine = function(buf, lineNumber)
-    vim.fn.sign_place(0, "bracket_open", "bracket_open", buf, { lnum = lineNumber })
+M.showCloseBracketOnLine = function(extension, buf, lineNumber)
+    vim.fn.sign_place(
+        0,
+        extension .. "_bracketClose",
+        extension .. "_bracketClose",
+        buf,
+        { lnum = lineNumber }
+    )
 end
 
-M.showCloseBracketOnLine = function(buf, lineNumber)
-    vim.fn.sign_place(0, "bracket_close", "bracket_close", buf, { lnum = lineNumber })
+M.showOpenAndCloseBracketsOnLine = function(extension, buf, lineNumber)
+    vim.fn.sign_place(
+        0,
+        extension .. "_bracketsOpenAndClose",
+        extension .. "_bracketsOpenAndClose",
+        buf,
+        { lnum = lineNumber }
+    )
 end
 
 M.isContains = function(tab, val)
-    for index, value in ipairs(tab) do
+    if tab == nil then return false end
+    for _, value in ipairs(tab) do
         if value == val then
             return true
         end
@@ -74,30 +220,8 @@ M.isContains = function(tab, val)
     return false
 end
 
-M.findNodeForBracketsHighlight = function(node)
-    local nodeTypesForHighlight = {
-        'block',
-        'parenthesized_expression',
-        'class_definition',
-        'class_body',
-        'function_definition',
-        'formal_parameter_list',
-        'function_body',
-        'arguments',
-        'optional_formal_parameters',
-        -- 'identifier',
-        -- 'type_identifier',
-        'initialized_variable_definition',
-        'local_variable_declaration',
-        'if_statement',
-        'switch_expression',
-        -- 'switch_expression_case',
-        'table_constructor',
-        'string',
-        'string_content',
-        'program',
-    }
-    if (M.isContains(nodeTypesForHighlight, node:type())) then
+M.findNodeForBracketsHighlight = function(node, nodesForBracketsHighlight)
+    if (M.isContains(nodesForBracketsHighlight, node:type())) then
         return node
     end
 
@@ -115,7 +239,7 @@ M.findBeginAndEndNodeLines = function(node)
 end
 
 
---  TODO: remove
+-- TODO: remove
 M.setup()
 
 return M

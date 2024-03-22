@@ -49,6 +49,8 @@ return {
                     ["NeotestMarked"] = { fg = "#665c54" },
                     ["NeotestTarget"] = { fg = "#a89984" },
                     ["NeotestTest"] = { fg = "#d5c4a1" },
+                    ["QuickScopePrimary"] = { fg = "#83a598" },
+                    ["QuickScopeSecondary"] = { fg = "#7c6f64" },
                 }
             })
         end

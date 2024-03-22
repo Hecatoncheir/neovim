@@ -19,6 +19,21 @@ return {
                 end
             end
 
+            local weekDayName = function()
+                local weekDay = os.date('%a')
+                local days = {
+                    ['Mon'] = 'Понедельник',
+                    ['Tue'] = 'Вторник',
+                    ['Wed'] = 'Среда',
+                    ['Thu'] = 'Четверг',
+                    ['Fri'] = 'Пятница',
+                    ['Sat'] = 'Суббота',
+                    ['Sun'] = 'Воскресенье',
+                }
+                return days[weekDay]
+            end
+
+
             require('lsp-progress').setup()
             require('lualine').setup {
                 options = {
@@ -58,8 +73,9 @@ return {
                     },
                     lualine_y = { 'progress' },
                     lualine_z = {
-                        'ctime',
                         'cdate',
+                        weekDayName,
+                        'ctime',
                     }
                 },
                 inactive_sections = {
@@ -84,5 +100,4 @@ return {
             })
         end
     },
-
 }

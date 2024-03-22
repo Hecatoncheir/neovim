@@ -70,6 +70,7 @@ return {
         end
     },
 
+    { "nvim-neotest/nvim-nio" },
 
     {
         "folke/neodev.nvim",
