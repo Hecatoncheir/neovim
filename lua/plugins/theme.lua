@@ -25,6 +25,9 @@ return {
                 dim_inactive = false,
                 transparent_mode = false,
                 overrides = {
+                    ["DapBreakpoint"] = { fg = "#fabd2f" },
+                    ["DapLogPoint"] = { fg = "#83a598" },
+                    ["DapStopped"] = { fg = "#b8bb26" },
                     ["BufferCurrent"] = { bg = "#7c6f64" },
                     ["BufferCurrentMod"] = { bg = "#7c6f64", fg = "#282828" },
                     ["BufferCurrentINFO"] = { bg = "#7c6f64" },

@@ -11,6 +11,7 @@ return {
     {
         'hrsh7th/nvim-cmp',
         config = function()
+            local lspkind = require('lspkind');
             local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
             local cmp = require('cmp')
             cmp.setup({
@@ -65,7 +66,18 @@ return {
                 }, {
                     -- { name = 'buffer' }, // TODO: turn off in terminal buffer
                     { name = 'nvim_lsp_signature_help' }
-                })
+                }),
+                formatting = {
+                    format = lspkind.cmp_format({
+                        mode = 'symbol_text',
+                        maxwidth = 50,
+                        ellipsis_char = '...',
+                        show_labelDetails = true,
+                        before = function(entry, vim_item)
+                            return vim_item
+                        end
+                    })
+                }
             })
         end
     },

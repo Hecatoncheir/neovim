@@ -1,3 +1,10 @@
+vim.api.nvim_create_autocmd('VimEnter', {
+    callback = function(ev)
+        vim.cmd("set cursorline")
+        -- vim.cmd("set cursorcolumn")
+    end,
+})
+
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -33,6 +40,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
             { desc = "Format" })
     end,
 })
+
+
 
 -- vim.api.nvim_create_autocmd('VimEnter', {
 --     callback = function(ev)

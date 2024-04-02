@@ -39,6 +39,9 @@ require("lazy").setup({
         { import = "plugins.ui.tests" },
         { import = "plugins.ui.debug" },
         { import = "plugins.ui.telescope" },
+        { import = "plugins.ui.brackets_highlighter" },
+        { import = "plugins.ui.hlchunk" },
+        { import = "plugins.ui.colors" },
         -- Extensions
         { import = "plugins.extensions.ruscmd" },
         { import = "plugins.extensions.dashboard" },
@@ -55,7 +58,7 @@ require("lazy").setup({
         -- { import = "plugins.extensions.outline" },
         { import = "plugins.extensions.diffview" },
         { import = "plugins.extensions.inc_rename" },
-        { import = "plugins.extensions.mini" },
+        -- { import = "plugins.extensions.mini" },
         { import = "plugins.extensions.aerial" },
         { import = "plugins.extensions.hurl" },
         { import = "plugins.extensions.murmur" },
@@ -66,6 +69,5 @@ require("lazy").setup({
         -- { import = "plugins.extensions.neodim" },
         -- { import = "plugins.extensions.ibl" },
         -- { import = "plugins.extensions.peek" },
-        -- { import = "plugins.ui.brackets_highlihgter" },
     },
 })
